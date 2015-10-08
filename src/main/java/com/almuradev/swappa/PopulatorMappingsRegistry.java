@@ -39,6 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class PopulatorMappingsRegistry {
+
     private static final Logger logger = LoggerFactory.getLogger(Swappa.PLUGIN_ID + "-populators");
     private static final Map<PluginContainer, Map<PopulatorType, Set<ReplacementEntry>>> REGISTRY_POPULATORS = new HashMap<>();
     private static final Set<ReplacementEntry> REGISTRY_ALL = new HashSet<>();
@@ -182,6 +183,7 @@ public class PopulatorMappingsRegistry {
     }
 
     public static class ReplacementEntry {
+
         public final BlockState originalBlockState, replacementBlockState;
 
         public ReplacementEntry(BlockState originalBlockState, BlockState replacementBlockState) {

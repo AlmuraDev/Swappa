@@ -70,13 +70,11 @@ public class Swappa {
     @Inject public PluginManager pluginManager;
     @Inject public GameRegistry registry;
     @Inject public Logger logger;
-
+    public ConfigurationNode populatorsRootNode, blockStatesRootNode;
     @Inject
     @DefaultConfig(sharedRoot = false)
     private File configDir;
-
     private ConfigurationLoader populatorMappingsConfigLoader, blockStateMappingsConfigLoader;
-    public ConfigurationNode populatorsRootNode, blockStatesRootNode;
 
     public Swappa() {
         instance = this;
@@ -152,7 +150,8 @@ public class Swappa {
                 } else {
                     optReplacementEntry = PopulatorMappingsRegistry.getEntry(transaction.getFinalReplacement().getState());
                     if (optReplacementEntry.isPresent()) {
-                        transaction.setCustomReplacement(transaction.getFinalReplacement().withState(optReplacementEntry.get().replacementBlockState));
+                        transaction
+                                .setCustomReplacement(transaction.getFinalReplacement().withState(optReplacementEntry.get().replacementBlockState));
                     }
                 }
             }

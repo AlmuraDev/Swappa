@@ -8,7 +8,6 @@ defaultTasks 'clean', 'build'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-group = project.group
 archivesBaseName = project.name.toLowerCase()
 version = "${project.version}-r${project.apiVersion.split("-")[0]}"
 

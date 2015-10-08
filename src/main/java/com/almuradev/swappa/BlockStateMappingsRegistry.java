@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class BlockStateMappingsRegistry {
+
     private static final Logger logger = LoggerFactory.getLogger(Swappa.PLUGIN_ID + "-blockstates");
     private static final Map<PluginContainer, Map<String, BlockState>> REGISTRY = new HashMap<>();
     private static final String SECTION_MAPPINGS = "mappings";
@@ -75,7 +76,8 @@ public final class BlockStateMappingsRegistry {
     public static void load() {
         REGISTRY.clear();
 
-        for (Map.Entry<Object, ? extends ConfigurationNode> modEntry : Swappa.instance.blockStatesRootNode.getNode(BlockStateMappingsRegistry.SECTION_MAPPINGS)
+        for (Map.Entry<Object, ? extends ConfigurationNode> modEntry : Swappa.instance.blockStatesRootNode
+                .getNode(BlockStateMappingsRegistry.SECTION_MAPPINGS)
                 .getChildrenMap().entrySet()) {
             final String modId = (String) modEntry.getKey();
             final Optional<PluginContainer> optPluginContainer = Swappa.instance.pluginManager.getPlugin(modId);
@@ -107,8 +109,9 @@ public final class BlockStateMappingsRegistry {
                         }
 
                         if (matchedTrait == null) {
-                            BlockStateMappingsRegistry.logger.warn("Potential Trait [" + valueEntry.getKey() + "] in [" + mappedName + "] is not valid for "
-                                    + "Block [" + blockState.getType().getName() + "] in Mod [" + optPluginContainer.get().getId() + "]!");
+                            BlockStateMappingsRegistry.logger
+                                    .warn("Potential Trait [" + valueEntry.getKey() + "] in [" + mappedName + "] is not valid for "
+                                            + "Block [" + blockState.getType().getName() + "] in Mod [" + optPluginContainer.get().getId() + "]!");
                             continue;
                         }
 
