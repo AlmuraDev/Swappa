@@ -117,6 +117,8 @@ public class Swappa {
 
                     try {
                         dumpMappingsConfigLoader.save(dumpRootNode);
+
+                        src.sendMessage(Texts.of("Dumped saved successfully."));
                     } catch (IOException e) {
                         throw new CommandException(Texts.of(e));
                     }
@@ -140,7 +142,6 @@ public class Swappa {
 
     @Listener
     public void onPopulateChunkPost(PopulateChunkEvent.Post event) {
-        this.logger.info("About to swap out blocks");
         for (Map.Entry<PopulatorType, List<BlockTransaction>> populatorTypeTransactionEntry : event.getPopulatedTransactions().entrySet()) {
             for (BlockTransaction transaction : populatorTypeTransactionEntry.getValue()) {
                 Optional<PopulatorMappingsRegistry.ReplacementEntry> optReplacementEntry = PopulatorMappingsRegistry.getEntry
