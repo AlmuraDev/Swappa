@@ -1,0 +1,19 @@
+# 1.0
+# Populator Mappings File.
+#
+# Populator mappings can easily be added so long as you follow the specification:
+#
+# populators:
+#   mod_id: -> Consult the mod/plugin author for this
+#       populator_id: ->
+#           mapped_populator_block: mapped_replacement_block -> Instructs the populator to take the populator block
+#                                                               and replace it with the replacement block. An example
+#                                                               would be taking stone and replacing with water.
+#
+general:
+    # Specifiying true here prints out mappings. Very spammy, only use this to verify your stuff is being registered.
+    debug: false
+populators:
+    minecraft:
+        ore:
+            stone: diamond_block

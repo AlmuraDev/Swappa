@@ -1,0 +1,24 @@
+# 1.0
+# BlockState Mappings File.
+#
+# BlockState mappings can easily be added so long as you follow the specification:
+#
+# mappings:
+#   mod_id: -> Consult the mod/plugin author for this
+#     block_id -> Wiki/Mod Author/Block.java in official source is your friend
+#       some_readable_name: -> This is the name you'll use in populators.yml, can be whatever you want
+#         some_property_name: -> some_property_value
+#         ... continue for how many properties that may exist
+#
+general:
+    # Specifiying true here prints out mappings. Very spammy, only use this to verify your stuff is being registered.
+    debug: true
+mappings:
+  minecraft:
+    log2:
+      log2_acacia_down:
+        variant: acacia
+        axis: y
+    wool:
+      wool_black:
+        color: black
