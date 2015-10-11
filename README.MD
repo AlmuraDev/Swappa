@@ -21,6 +21,7 @@ To build Swappa, simply run `gradle`. The compiled jar is located in `./libs/`.
 [Download]: https://github.com/AlmuraDev/Swappa/releases/latest
 [Issues]: https://github.com/AlmuraDev/Swappa/issues
 [Java]: http://www.java.com
+[Gradle]: http://www.gradle.org
 [MIT License]: http://www.tldrlegal.com/license/mit-license
 [Source]: https://github.com/AlmuraDev/Swappa/
 [Wiki]: https://github.com/AlmuraDev/Swappa/
