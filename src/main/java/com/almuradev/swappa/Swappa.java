@@ -75,7 +75,6 @@ public class Swappa {
     @Inject
     @DefaultConfig(sharedRoot = false)
     private File configDir;
-    private YAMLConfigurationLoader populatorMappingsConfigLoader, blockStateMappingsConfigLoader;
 
     public Swappa() {
         instance = this;
@@ -161,10 +160,10 @@ public class Swappa {
     private void loadConfig() throws IOException {
         final Path blockStateMappingsPath = configDir.toPath().getParent().resolve(Swappa.BLOCKSTATES_FILE);
         final Path populatorMappingsPath = configDir.toPath().getParent().resolve(Swappa.POPULATORS_FILE);
-        populatorMappingsConfigLoader = YAMLConfigurationLoader.builder().setFlowStyle(DumperOptions.FlowStyle.BLOCK).setFile(populatorMappingsPath
-                .toFile()).build();
-        blockStateMappingsConfigLoader = YAMLConfigurationLoader.builder().setFlowStyle(DumperOptions.FlowStyle.BLOCK).setFile
-                (blockStateMappingsPath.toFile()).build();
+        final YAMLConfigurationLoader populatorMappingsConfigLoader = YAMLConfigurationLoader.builder().setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+                .setFile(populatorMappingsPath.toFile()).build();
+        final YAMLConfigurationLoader blockStateMappingsConfigLoader = YAMLConfigurationLoader.builder().setFlowStyle(DumperOptions.FlowStyle.BLOCK)
+                .setFile(blockStateMappingsPath.toFile()).build();
 
         try {
             Files.createDirectories(configDir.toPath().getParent());
