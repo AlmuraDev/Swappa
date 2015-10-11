@@ -2,7 +2,6 @@ Swappa
 =======
 A plugin that swaps populated blocks with configurable ones. It is licensed under the [MIT License].
 
-* [Source]
 * [Issues]
 * [Wiki]
 * [Donate]
@@ -23,5 +22,4 @@ To build Swappa, simply run `gradle`. The compiled jar is located in `./libs/`.
 [Java]: http://www.java.com
 [Gradle]: http://www.gradle.org
 [MIT License]: http://www.tldrlegal.com/license/mit-license
-[Source]: https://github.com/AlmuraDev/Swappa/
 [Wiki]: https://github.com/AlmuraDev/Swappa/
