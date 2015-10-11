@@ -28,7 +28,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 import org.slf4j.Logger;
 import org.spongepowered.api.GameRegistry;
@@ -49,9 +48,11 @@ import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 import org.spongepowered.api.world.gen.PopulatorType;
+import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -63,7 +64,7 @@ import java.util.Optional;
 @Plugin(id = Swappa.PLUGIN_ID, name = Swappa.PLUGIN_NAME, version = Swappa.PLUGIN_VERSION)
 public class Swappa {
 
-    public static final String PLUGIN_ID = "swappa", PLUGIN_NAME = "Swappa", PLUGIN_VERSION = "1.0", POPULATORS_FILE = "populators.yml",
+    public static final String PLUGIN_ID = "swappa", PLUGIN_NAME = "Swappa", PLUGIN_VERSION = "1.0-r2.1", POPULATORS_FILE = "populators.yml",
             BLOCKSTATES_FILE = "blockstates.yml", DUMP_FILE = "dump.yml";
     public static Swappa instance;
 
@@ -74,7 +75,7 @@ public class Swappa {
     @Inject
     @DefaultConfig(sharedRoot = false)
     private File configDir;
-    private ConfigurationLoader populatorMappingsConfigLoader, blockStateMappingsConfigLoader;
+    private YAMLConfigurationLoader populatorMappingsConfigLoader, blockStateMappingsConfigLoader;
 
     public Swappa() {
         instance = this;
@@ -128,7 +129,6 @@ public class Swappa {
 
     @Listener
     public void onGameLoadComplete(GameLoadCompleteEvent event) throws Exception {
-        createConfigLoader();
         loadConfig();
         BlockStateMappingsRegistry.load();
         PopulatorMappingsRegistry.load();
@@ -158,23 +158,85 @@ public class Swappa {
         }
     }
 
-    private void createConfigLoader() throws IOException {
-        final Path blockStateMappingsPath = configDir.toPath().getParent().resolve(Swappa.BLOCKSTATES_FILE);
-        if (!Files.exists(blockStateMappingsPath)) {
-            Files.copy(Swappa.class.getResourceAsStream(Swappa.BLOCKSTATES_FILE), blockStateMappingsPath);
-        }
-
-        final Path populatorMappingsPath = configDir.toPath().getParent().resolve(Swappa.POPULATORS_FILE);
-        if (!Files.exists(populatorMappingsPath)) {
-            Files.copy(Swappa.class.getResourceAsStream(Swappa.POPULATORS_FILE), populatorMappingsPath);
-        }
-
-        populatorMappingsConfigLoader = YAMLConfigurationLoader.builder().setFile(populatorMappingsPath.toFile()).build();
-        blockStateMappingsConfigLoader = YAMLConfigurationLoader.builder().setFile(blockStateMappingsPath.toFile()).build();
-    }
-
     private void loadConfig() throws IOException {
-        populatorsRootNode = populatorMappingsConfigLoader.load();
-        blockStatesRootNode = blockStateMappingsConfigLoader.load();
+        final Path blockStateMappingsPath = configDir.toPath().getParent().resolve(Swappa.BLOCKSTATES_FILE);
+        final Path populatorMappingsPath = configDir.toPath().getParent().resolve(Swappa.POPULATORS_FILE);
+        populatorMappingsConfigLoader = YAMLConfigurationLoader.builder().setFlowStyle(DumperOptions.FlowStyle.BLOCK).setFile(populatorMappingsPath
+                .toFile()).build();
+        blockStateMappingsConfigLoader = YAMLConfigurationLoader.builder().setFlowStyle(DumperOptions.FlowStyle.BLOCK).setFile
+                (blockStateMappingsPath.toFile()).build();
+
+        try {
+            Files.createDirectories(configDir.toPath().getParent());
+        } catch (FileAlreadyExistsException ignore) {
+        }
+
+        if (Files.notExists(blockStateMappingsPath)) {
+            final ConfigurationOptions blockStatesOptions = ConfigurationOptions.defaults().setHeader(
+                    "1.0\n"
+                    + "BlockState Mappings File.\n"
+                    + "\n"
+                    + "BlockState mappings can easily be added so long as you follow the specification:\n"
+                    + "\n"
+                    + "mappings:\n"
+                    + "    mod_id: -> Consult the mod/plugin author for this\n"
+                    + "        block_id -> Wiki/Mod Author/Block.java in official source is your friend\n"
+                    + "            some_readable_name: -> This is the name you'll use in populators.yml, can be whatever you want\n"
+                    + "                some_property_name: -> some_property_value\n"
+                    + "                ... continue for how many properties that may \n"
+                    + "\n"
+                    + "Example:\n"
+                    + "\n"
+                    + "mappings:\n"
+                    + "    minecraft:\n"
+                    + "        log2:\n"
+                    + "            log2_acacia_down:\n"
+                    + "                variant: acacia\n"
+                    + "                axis: y\n"
+                    + "");
+            blockStatesRootNode = blockStateMappingsConfigLoader.createEmptyNode(blockStatesOptions);
+            blockStatesRootNode.getNode("general", "debug").setValue(false);
+            blockStatesRootNode.getNode("mappings", "minecraft").setValue("");
+            blockStateMappingsConfigLoader.save(blockStatesRootNode);
+        } else {
+            blockStatesRootNode = blockStateMappingsConfigLoader.load();
+        }
+
+        if (Files.notExists(populatorMappingsPath)) {
+            final ConfigurationOptions populatorsOptions = ConfigurationOptions.defaults().setHeader(
+                    "1.0\n"
+                    + "Populator Mappings File.\n"
+                    + "\n"
+                    + "Populator mappings can easily be added so long as you follow the specification:\n"
+                    + "\n"
+                    + "populators:\n"
+                    + "    mod_id: -> Consult the mod/plugin author for this\n"
+                    + "        populator_id: ->\n"
+                    + "            mapped_populator_block: mapped_replacement_block -> Instructs the populator to take the populator block\n"
+                    + "                                                                and replace it with the replacement block. An example\n"
+                    + "                                                                would be taking stone and replacing with water.\n"
+                    + "\n"
+                    + "Another feature is an \"all\" replacement. This means, literally, replace all found instances of a blockstate with\n"
+                    + "with another blockstate.\n"
+                    + "\n"
+                    + "all:\n"
+                    + "    mapped_populator_block: mapped_replacement_block\n"
+                    + "\n"
+                    + "Example:\n"
+                    + "\n"
+                    + "all:\n"
+                    + "    water: grass\n"
+                    + "populators:\n"
+                    + "    minecraft:\n"
+                    + "        ore:\n"
+                    + "            stone: diamond_block");
+            populatorsRootNode = populatorMappingsConfigLoader.createEmptyNode(populatorsOptions);
+            populatorsRootNode.getNode("general", "debug").setValue(false);
+            populatorsRootNode.getNode("all").setValue("");
+            populatorsRootNode.getNode("populators", "minecraft").setValue("");
+            populatorMappingsConfigLoader.save(populatorsRootNode);
+        } else {
+            populatorsRootNode = populatorMappingsConfigLoader.load();
+        }
     }
 }
